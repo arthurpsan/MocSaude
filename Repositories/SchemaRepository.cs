@@ -17,7 +17,7 @@ namespace MocSaude.Repositories
                     TABLE_SCHEMA AS SchemaName,
                     TABLE_NAME   AS TableName
                 FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_TYPE = 'BASE TABLE'
+                WHERE TABLE_TYPE IN ('BASE TABLE', 'VIEW')
                 ORDER BY TABLE_SCHEMA, TABLE_NAME";
 
             using var conn = _databaseConnection.CreateConnection();

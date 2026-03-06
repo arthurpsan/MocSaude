@@ -1,4 +1,5 @@
-﻿using MocSaude.Services;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MocSaude.Services;
 
 namespace MocSaude.Presenters
 {
@@ -31,6 +32,7 @@ namespace MocSaude.Presenters
             catch (Exception ex) { _view.ShowError(ex.Message); }
             finally { _view.SetLoading(false); }
         }
+
         private async Task OnTableChangedAsync()
         {
             if (_view.SelectedTableName == null) return;
@@ -42,46 +44,47 @@ namespace MocSaude.Presenters
                     _view.SelectedSchemaName ?? "dbo");
 
                 _view.SetColumns(table.Columns);
-                _view.SetGroupByOptions(
-                    table.Columns.Where(c => !c.IsNumeric).Select(c => c.ColumnName).ToList());
-                _view.SetAggregateOptions(
-                    table.Columns.Where(c => c.IsNumeric).Select(c => c.ColumnName).ToList());
+
+                var todasColunas = table.Columns;
+
+                _view.SetGroupByOptions(table.Columns.ToList());
+                _view.SetAggregateOptions(table.Columns.ToList());
             }
             catch (Exception ex) { _view.ShowError(ex.Message); }
             finally { _view.SetLoading(false); }
         }
+
         private async Task OnLoadDataAsync()
         {
-            if (_view.SelectedTableName == null || 
-                _view.SelectedGroupBy == null || 
-                _view.SelectedAggregate == null) return;
+            if (_view.SelectedTableName == null) return;
 
             _view.SetLoading(true);
-
             try
             {
-                var table = await _schema.GetTableWithColumnsAsync(
+                // busca o esquema da tabela atual
+                var tableSchema = await _schema.GetTableWithColumnsAsync(
                     _view.SelectedTableName,
                     _view.SelectedSchemaName ?? "dbo");
 
-                var dataset = await _dashboard.LoadAsync(
-                    table,
-                    _view.SelectedColumns,
+                // chama o serviço passando o novo campo de filtro global
+                var dashboardData = await _dashboard.GetDatasetAsync(
+                    tableSchema,
                     _view.SelectedGroupBy,
                     _view.SelectedAggregate,
-                    _view.SelectedAggFunc ?? "SUM");
+                    _view.SelectedAggFunc,
+                    _view.GlobalFilter);
 
-                _view.UpdateGrid(dataset.Rows);
-                _view.UpdateChart(dataset.ChartData,
-                    $"{dataset.AggFunc}({dataset.Aggregate})) por {dataset.GroupBy}");
+                // atualiza a interface
+                _view.UpdateGrid(dashboardData.TableData);
+                _view.UpdateChart(dashboardData.ChartData, $"Análise: {_view.SelectedAggregate} por {_view.SelectedGroupBy}");
             }
             catch (Exception ex)
             {
                 _view.ShowError(ex.Message);
             }
-            finally 
-            { 
-                _view.SetLoading(false); 
+            finally
+            {
+                _view.SetLoading(false);
             }
         }
     }

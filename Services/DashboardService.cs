@@ -7,29 +7,28 @@ namespace MocSaude.Services
     public class DashboardService
     {
         private readonly DynamicQueryRepository _repo;
-
         public DashboardService(DynamicQueryRepository repo) => _repo = repo;
 
-        public async Task<DashboardDataset> LoadAsync(
-            TableSchema table,
-            List<String> selectedColumns,
-            String groupByCol,
-            String aggregateCol,
-            String aggFunc)
+        public async Task<DashboardDataset> GetDatasetAsync(
+                    TableSchema table,
+                    string? groupByCol,
+                    string? aggregateCol,
+                    string? aggFunc,
+                    string? filter = null)
         {
-            var rowsTask = _repo.QueryTableAsync(table, selectedColumns);
-            var chartTask = _repo.QueryAggregatedAsync(table, groupByCol, aggregateCol, aggFunc);
+            var chartData = await _repo.QueryAggregatedAsync(
+                table,
+                groupByCol ?? "",
+                aggregateCol ?? "",
+                aggFunc ?? "COUNT",
+                filter);
 
-            await Task.WhenAll(rowsTask, chartTask);
+            var tableData = await _repo.QueryTableAsync(table, null, 200);
 
             return new DashboardDataset
             {
-                Rows = rowsTask.Result,
-                ChartData = chartTask.Result.Select(r => new ChartPoint { Label = r.Label, Value = r.Value }).ToList(),
-                TableName = table.TableName,
-                GroupBy = groupByCol,
-                Aggregate = aggregateCol,
-                AggFunc = aggFunc
+                ChartData = chartData.Select(c => new ChartPoint { Label = c.Label, Value = c.Value }).ToList(),
+                TableData = tableData
             };
         }
     }

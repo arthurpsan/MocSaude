@@ -13,6 +13,47 @@ namespace MocSaude.Models.Schema
         public Int64? MaxLength { get; set; }
         public Boolean IsNullable { get; set; }
         public Boolean IsPrimaryKey { get; set; }
+        public String DisplayName
+        {
+            get
+            {
+                return ColumnName.ToUpper() switch
+                {
+                    // identificaçao e tempo
+                    "ANO_CMPT" => "Ano de Competência",
+                    "MES_CMPT" => "Mês de Competência",
+                    "N_AIH" => "Número da AIH",
+                    "CEP" => "CEP do Paciente",
+                    "MUNIC_RES" => "Município de Residência",
+                    "MUNIC_MOV" => "Município do Hospital",
+
+                    // dados clinicos
+                    "NASC" => "Data de Nascimento",
+                    "SEXO" => "Sexo do Paciente",
+                    "IDADE" => "Idade do Paciente",
+                    "DIAG_PRINC" => "Diagnóstico Principal (CID-10)",
+                    "DIAG_SECUN" => "Diagnóstico Secundário",
+                    "MORTE" => "Ocorreu Óbito? (1=Sim, 0=Não)",
+                    "CAR_INT" => "Caráter da Internação (Urgência/Eletiva)",
+                    "ESPEC" => "Especialidade do Leito",
+
+                    // indicadores hospitalares
+                    "DIAS_PERM" => "Tempo de Permanência (Dias)",
+                    "UTI_MES_TO" => "Dias na UTI (No Mês)",
+                    "UTI_INT_TO" => "Dias na UTI (Total da Internação)",
+                    "COBRANCA" => "Motivo da Saída/Alta",
+
+                    // valores financeiros
+                    "VAL_TOT" => "Valor Total da Internação (R$)",
+                    "VAL_SH" => "Valor Serviços Hospitalares (R$)",
+                    "VAL_SP" => "Valor Serviços Profissionais (R$)",
+                    "VAL_UTI" => "Valor Gasto em UTI (R$)",
+
+                    // casos não mapeados
+                    _ => ColumnName
+                };
+            }
+        }
 
         public Type DotNetType => DataType.ToLower() switch
         {
