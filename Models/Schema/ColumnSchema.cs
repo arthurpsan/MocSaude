@@ -19,37 +19,38 @@ namespace MocSaude.Models.Schema
             {
                 return ColumnName.ToUpper() switch
                 {
-                    // identificaçao e tempo
+                    // SIH_EIXO_1
+                    "DT_INTER" => "Data de Internação",
+                    "DT_SAIDA" => "Data de Alta/Saída",
+                    "UF_ZI" => "UF de Gestão",
+                    "CNES" => "Código CNES do Hospital",
+
+                    // IBGE_EIXO_1
+                    "POP" => "População Total",
+                    "ID_MUNICIP" => "Código Município (IBGE)",
+                    "ORIGEM" => "Fonte dos Dados",
+
+                    // CID-10 e ISCAP
+                    "CAT" => "Categoria CID",
+                    "CLASSIF" => "Classificação",
+                    "DESCRICAO" => "Descrição Completa",
+                    "DESCRABREV" => "Descrição Abreviada",
+                    "REFER" => "Referência",
+                    "EXCLUIDOS" => "Critérios de Exclusão",
+                    "DESC" => "Descrição da Doença",
+
+                    // colunas de indicadores
+
+                    "TAXA_POR_MIL_HAB" => "Taxa por Mil Habitantes",
+                    "TOTAL_INTERNACOES" => "Total de Internações",
+                    "POPULACAO_MUNICIPAL" => "População Municipal",
+                    "CATEGORIA_DOENCA" => "Descrição da Doença (CID)",
+                    "QUANTIDADE_CASOS" => "Quantidade de Casos",
+                    "MEDIA_DIAS_UTI" => "Média de Permanência em UTI",
                     "ANO_CMPT" => "Ano de Competência",
+                    "VAL_TOT" => "Valor Total (R$)",
+                    "MORTE" => "Óbito Confirmado",
                     "MES_CMPT" => "Mês de Competência",
-                    "N_AIH" => "Número da AIH",
-                    "CEP" => "CEP do Paciente",
-                    "MUNIC_RES" => "Município de Residência",
-                    "MUNIC_MOV" => "Município do Hospital",
-
-                    // dados clinicos
-                    "NASC" => "Data de Nascimento",
-                    "SEXO" => "Sexo do Paciente",
-                    "IDADE" => "Idade do Paciente",
-                    "DIAG_PRINC" => "Diagnóstico Principal (CID-10)",
-                    "DIAG_SECUN" => "Diagnóstico Secundário",
-                    "MORTE" => "Ocorreu Óbito? (1=Sim, 0=Não)",
-                    "CAR_INT" => "Caráter da Internação (Urgência/Eletiva)",
-                    "ESPEC" => "Especialidade do Leito",
-
-                    // indicadores hospitalares
-                    "DIAS_PERM" => "Tempo de Permanência (Dias)",
-                    "UTI_MES_TO" => "Dias na UTI (No Mês)",
-                    "UTI_INT_TO" => "Dias na UTI (Total da Internação)",
-                    "COBRANCA" => "Motivo da Saída/Alta",
-
-                    // valores financeiros
-                    "VAL_TOT" => "Valor Total da Internação (R$)",
-                    "VAL_SH" => "Valor Serviços Hospitalares (R$)",
-                    "VAL_SP" => "Valor Serviços Profissionais (R$)",
-                    "VAL_UTI" => "Valor Gasto em UTI (R$)",
-
-                    // casos não mapeados
                     _ => ColumnName
                 };
             }
@@ -74,5 +75,7 @@ namespace MocSaude.Models.Schema
 
         public Boolean IsDateTime
             => DotNetType == typeof(DateTime);
+
+        public override String ToString() => DisplayName;
     }
 }

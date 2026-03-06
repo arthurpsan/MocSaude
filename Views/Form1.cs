@@ -27,10 +27,12 @@ namespace MocSaude.Forms
         public String? SelectedSchemaName
             => (cboTables.SelectedItem as TableSchema)?.SchemaName;
         public String? SelectedGroupBy
-            => cboGroupBy.SelectedValue?.ToString();
+            => (cboGroupBy.SelectedItem as ColumnSchema)?.ColumnName
+               ?? cboGroupBy.SelectedValue?.ToString();
         public String? SelectedAggregate
-            => cboAggregate.SelectedValue?.ToString();
-        public String? GlobalFilter { get; }
+            => (cboAggregate.SelectedItem as ColumnSchema)?.ColumnName
+               ?? cboAggregate.SelectedValue?.ToString();
+        public String? GlobalFilter => string.IsNullOrWhiteSpace(txtFiltroGlobal?.Text) ? null : txtFiltroGlobal.Text;
 
         public String? SelectedAggFunc
         {
@@ -61,8 +63,7 @@ namespace MocSaude.Forms
             InitializeComponent();
             AplicarDesign();
 
-            this.Load += async (s, e) => await _presenter.InitializeAsync();
-            WirePresenter();
+            WirePresenter(); // deve ser chamado ANTES de registrar eventos que usam _presenter
 
             cboTables.SelectedIndexChanged += cboTables_SelectedIndexChanged;
             btnLoad.Click += btnLoad_Click;
@@ -99,7 +100,7 @@ namespace MocSaude.Forms
             cboTables.DataSource = null;
             cboTables.DisplayMember = "";
             cboTables.DataSource = tables;
-            cboTables.DisplayMember = "FullName";
+            cboTables.DisplayMember = "DisplayName";
             if (tables.Any())
                 OnTableChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -108,12 +109,9 @@ namespace MocSaude.Forms
         {
             if (InvokeRequired) { Invoke(() => SetColumns(columns)); return; }
 
-            ((ListBox)clbColumns).DataSource = columns;
-            ((ListBox)clbColumns).DisplayMember = "DisplayName";
-            ((ListBox)clbColumns).ValueMember = "ColumnName";
-
-            for (int i = 0; i < clbColumns.Items.Count; i++)
-                clbColumns.SetItemChecked(i, true);
+            clbColumns.Items.Clear();
+            foreach (var col in columns)
+                clbColumns.Items.Add(col, true); // adiciona já marcado
         }
 
         public void SetGroupByOptions(List<ColumnSchema> cols)
@@ -190,8 +188,7 @@ namespace MocSaude.Forms
 
             var values = points.Select(p => p.Value).ToArray();
             var labels = points.Select(p => p.Label).ToArray();
-
-            plt.Add.Bars(values);
+            var myBars = plt.Add.Bars(values);
 
             plt.Axes.Bottom.SetTicks(
                 Enumerable.Range(0, labels.Length).Select(i => (Double)i).ToArray(),
@@ -245,7 +242,7 @@ namespace MocSaude.Forms
 
             int currentY = 20;
 
-            // função auxiliar para adicionar itens no menu
+            // funçao auxiliar para adicionar itens no menu
             void AddAoMenuLateral(string titulo, Control ctrl, int altura = 30)
             {
                 ctrl.Dock = DockStyle.None;
@@ -294,6 +291,9 @@ namespace MocSaude.Forms
             AddAoMenuLateral("3. MÉTRICA (Ex: Dias UTI, Óbitos)", cboAggregate);
             AddAoMenuLateral("4. TIPO DE ANÁLISE", cboAggFunc);
             AddAoMenuLateral("5. DETALHAMENTO DA TABELA", clbColumns, 150);
+
+            txtFiltroGlobal = new TextBox { Width = 280, Height = 30 };
+            AddAoMenuLateral("FILTRO AVANÇADO (Ex: ANO_CMPT = 2023)", txtFiltroGlobal, 30);
 
             // estiliza o botão principal
             btnLoad.Dock = DockStyle.None;

@@ -18,6 +18,8 @@ namespace MocSaude.Repositories
                     TABLE_NAME   AS TableName
                 FROM INFORMATION_SCHEMA.TABLES
                 WHERE TABLE_TYPE IN ('BASE TABLE', 'VIEW')
+                    AND TABLE_NAME != 'sysdiagrams'
+                    AND TABLE_SCHEMA = 'dbo'
                 ORDER BY TABLE_SCHEMA, TABLE_NAME";
 
             using var conn = _databaseConnection.CreateConnection();
@@ -66,7 +68,7 @@ namespace MocSaude.Repositories
                 {
                     ColumnName = d["ColumnName"]?.ToString() ?? "",
                     DataType = d["DataType"]?.ToString() ?? "",
-                    OrdinalPosition = Convert.ToInt32(d["OrdinalPosition"] ?? 0),
+                    OrdinalPosition = Convert.ToInt64(d["OrdinalPosition"] ?? 0),
                     MaxLength = d["MaxLength"] == null ? null : Convert.ToInt32(d["MaxLength"]),
                     IsNullable = Convert.ToInt32(d["IsNullable"] ?? 0) == 1,
                     IsPrimaryKey = Convert.ToInt32(d["IsPrimaryKey"] ?? 0) == 1

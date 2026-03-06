@@ -17,12 +17,17 @@ namespace MocSaude.Models.Schema
             {
                 return TableName.ToUpper() switch
                 {
-                    "SIH_EIXO_1" => "Internações - Dados Principais (SIH)",
-                    "SIH_EIXO_2" => "Internações - Dados Detalhados (SIH)",
-                    "VW_INTERNACOES_ANALISE" => "Análise Consolidada de Internações",
-                    "INTERNACOES" => "Base Bruta de Internações",
-                    "CNES_ESTABELECIMENTOS" => "Estabelecimentos de Saúde (CNES)",
-                    "IBGE_POPULACAO" => "Dados Populacionais (IBGE)",
+                    // views de gestao
+                    "VW_MODALIDADE_INTERNACAO" => "Indicadores: Modalidade (Urgência vs Eletiva)",
+                    "VW_INDICADORES_COBERTURA" => "Indicadores: Cobertura Populacional",
+                    "VW_PAINEL_EPIDEMIOLOGICO" => "Indicadores: Perfil de Doenças (Epidemiologia)",
+                    "VW_PERFILINTERNACAO" => "Indicadores: Análise de Internações",
+
+                    // tabelas de dados
+                    "SIH_EIXO_1" => "Internações Hospitalares (Base Principal)",
+                    "IBGE_EIXO_1" => "Censo Populacional (IBGE)",
+                    "CID-10-CATEGORIAS" => "Dicionário de Categorias CID-10",
+                    "ISCAP" => "Dicionário de Descrições CID",
                     _ => TableName
                 };
             }

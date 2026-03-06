@@ -16,20 +16,27 @@ namespace MocSaude.Services
                     string? aggFunc,
                     string? filter = null)
         {
-            var chartData = await _repo.QueryAggregatedAsync(
-                table,
-                groupByCol ?? "",
-                aggregateCol ?? "",
-                aggFunc ?? "COUNT",
-                filter);
-
             var tableData = await _repo.QueryTableAsync(table, null, 200);
 
-            return new DashboardDataset
+            var dataset = new DashboardDataset
             {
-                ChartData = chartData.Select(c => new ChartPoint { Label = c.Label, Value = c.Value }).ToList(),
                 TableData = tableData
             };
+
+            // só executa agregação se os campos obrigatórios estiverem preenchidos
+            if (!string.IsNullOrWhiteSpace(groupByCol) && !string.IsNullOrWhiteSpace(aggregateCol))
+            {
+                var chartData = await _repo.QueryAggregatedAsync(
+                    table,
+                    groupByCol,
+                    aggregateCol,
+                    aggFunc ?? "COUNT",
+                    filter);
+
+                dataset.ChartData = chartData.Select(c => new ChartPoint { Label = c.Label, Value = c.Value }).ToList();
+            }
+
+            return dataset;
         }
     }
 }

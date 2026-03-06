@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using MocSaude.Services;
+﻿using MocSaude.Services;
 
 namespace MocSaude.Presenters
 {
@@ -76,7 +75,16 @@ namespace MocSaude.Presenters
 
                 // atualiza a interface
                 _view.UpdateGrid(dashboardData.TableData);
-                _view.UpdateChart(dashboardData.ChartData, $"Análise: {_view.SelectedAggregate} por {_view.SelectedGroupBy}");
+
+                // monta título do gráfico com nomes amigáveis (DisplayName) em vez dos nomes técnicos
+                var groupByDisplay = tableSchema.Columns?
+                    .FirstOrDefault(c => c.ColumnName == _view.SelectedGroupBy)?.DisplayName
+                    ?? _view.SelectedGroupBy ?? "";
+                var aggregateDisplay = tableSchema.Columns?
+                    .FirstOrDefault(c => c.ColumnName == _view.SelectedAggregate)?.DisplayName
+                    ?? _view.SelectedAggregate ?? "";
+
+                _view.UpdateChart(dashboardData.ChartData, $"Análise: {aggregateDisplay} por {groupByDisplay}");
             }
             catch (Exception ex)
             {

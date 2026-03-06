@@ -16,7 +16,7 @@ namespace MocSaude.Repositories
         // valida nomes de tabelas e colunas para evitar SQL Injection
         public static void Validate(String name)
         {
-            if (!Regex.IsMatch(name, @"^[\p{L}\p{N}\s_]+$"))
+            if (string.IsNullOrWhiteSpace(name) || !Regex.IsMatch(name, @"^[\p{L}\p{N}_\-]+$"))
                 throw new ArgumentException($"Invalid name: {name}");
         }
 
@@ -119,7 +119,7 @@ namespace MocSaude.Repositories
                     if (rawValue is DateTime dt)
                         value = dt.ToOADate();
                     else
-                        Double.TryParse(rawValue.ToString(), out value);
+                        value = Convert.ToDouble(rawValue);
                 }
 
                 return (Label: label, Value: value);
