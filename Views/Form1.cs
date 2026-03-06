@@ -21,7 +21,7 @@ namespace MocSaude.Forms
         private DashboardPresenter _presenter;
         private TextBox txtFiltroGlobal;
 
-        // -- IDashboard view propriedades processadas pelo presenter --
+        // IDashboard view propriedades processadas pelo presenter
         public String? SelectedTableName
             => (cboTables.SelectedItem as TableSchema)?.TableName;
         public String? SelectedSchemaName
@@ -63,7 +63,7 @@ namespace MocSaude.Forms
             InitializeComponent();
             AplicarDesign();
 
-            WirePresenter(); // deve ser chamado ANTES de registrar eventos que usam _presenter
+            WirePresenter(); // deve ser chamado antes de registrar eventos que usam _presenter
 
             cboTables.SelectedIndexChanged += cboTables_SelectedIndexChanged;
             btnLoad.Click += btnLoad_Click;
@@ -111,7 +111,7 @@ namespace MocSaude.Forms
 
             clbColumns.Items.Clear();
             foreach (var col in columns)
-                clbColumns.Items.Add(col, true); // adiciona já marcado
+                clbColumns.Items.Add(col, true); // adiciona ja marcado
         }
 
         public void SetGroupByOptions(List<ColumnSchema> cols)

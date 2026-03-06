@@ -11,15 +11,15 @@ namespace MocSaude.Repositories
 
         public async Task<KpiSummary> GetSummaryAsync(int? ano = null, int? mes = null)
         {
-            // monta cláusula WHERE dinamicamente
+            // monta clausula where dinamicamente
             var where = BuildWhere(ano, mes);
 
             var sql = $@"
                 SELECT
                     COUNT(*)                        AS TotalInternacoes,
-                    SUM(CAST(MORTE AS INT))          AS TotalObitos,
-                    AVG(CAST(DIAS_PERM AS FLOAT))    AS MediaDiasPerm,
-                    AVG(CAST(UTI_INT_TO AS FLOAT))   AS MediaDiasUti,
+                    SUM(CASE WHEN UPPER(CAST(MORTE AS NVARCHAR(10))) IN ('1','SIM','S','TRUE') THEN 1 ELSE 0 END) AS TotalObitos,
+                    AVG(CAST(DATEDIFF(DAY, DT_INTER, DT_SAIDA) AS FLOAT))  AS MediaDiasPerm,
+                    AVG(CASE WHEN UTI_INT_TO IS NOT NULL AND CAST(UTI_INT_TO AS NVARCHAR(20)) NOT IN ('0','') THEN CAST(UTI_INT_TO AS FLOAT) ELSE NULL END) AS MediaDiasUti,
                     SUM(CAST(VAL_TOT AS FLOAT))      AS ValorTotalGasto
                 FROM [dbo].[SIH_EIXO_1]
                 {where}";
@@ -87,7 +87,7 @@ namespace MocSaude.Repositories
             return rows.Select(r =>
             {
                 var d = (IDictionary<string, object>)r;
-                // converte número do mês para nome
+                // converte numero do mes para nome
                 var mesNum = d["Label"]?.ToString() ?? "";
                 var mesNome = mesNum switch
                 {
@@ -150,7 +150,6 @@ namespace MocSaude.Repositories
             }).Where(a => a > 0).ToList();
         }
 
-        // ------------------------------------------------------------------
         private static string BuildWhere(int? ano, int? mes)
         {
             if (ano.HasValue && mes.HasValue)

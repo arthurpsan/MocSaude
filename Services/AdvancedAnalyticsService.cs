@@ -5,7 +5,7 @@ namespace MocSaude.Services
 {
     public class AdvancedAnalyticsService
     {
-        // detecções de anomalia usando Z-Score: valores que estão a mais de 'threshold' desvios padrão da média são considerados anomalias
+        // detecçoes de anomalia usando Z-Score: valores que estao a mais de 'threshold' desvios padrao da media sao considerados anomalias
         public List<string> DetectarAnomalias(List<(string Label, double Valor)> dados, double threshold = 2.0)
         {
             if (!dados.Any()) return new List<string>();

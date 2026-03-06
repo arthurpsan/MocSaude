@@ -23,7 +23,7 @@ namespace MocSaude.Services
                 TableData = tableData
             };
 
-            // só executa agregação se os campos obrigatórios estiverem preenchidos
+            // so executa agregaçao se os campos obrigatorios estiverem preenchidos
             if (!string.IsNullOrWhiteSpace(groupByCol) && !string.IsNullOrWhiteSpace(aggregateCol))
             {
                 var chartData = await _repo.QueryAggregatedAsync(
